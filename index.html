@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HASIL UJIAN KYU</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body { margin: 20px; }
+    h2 { text-align: center; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Selamat datang peserta ujian KYU PROV BALI</h2>
+  
+  <input id="search" type="text" class="form-control mb-3" placeholder="Masukkan nama kamu..">
+  
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Ranting</th>
+        <th>Kab/Kota</th>
+        <th>Prov/Aff</th>
+        <th>Tingkatan</th>
+        <th>Sabuk</th>
+        <th>Tgl Ujian</th>
+        <th>No Ijasah</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTxn9QThG13jLsUz7PqonBLDLvpeUY7n93T0YYfEI1uR8NSgcXfaxd9Juzx6KsjN2op_fEm1F37ca0_/pub?output=csv";
+
+    async function loadData() {
+      const response = await fetch(csvUrl);
+      const text = await response.text();
+      const rows = text.split("\n").map(r => r.split(","));
+      const tbody = document.getElementById("table-body");
+      tbody.innerHTML = "";
+      for (let i = 1; i < rows.length; i++) { // skip header
+        let r = rows[i];
+        if (r.length < 8) continue;
+        tbody.innerHTML += `
+          <tr>
+            <td><a href="#">${r[0]}</a></td>
+            <td>${r[1]}</td>
+            <td>${r[2]}</td>
+            <td>${r[3]}</td>
+            <td>${r[4]}</td>
+            <td>${r[5]}</td>
+            <td>${r[6]}</td>
+            <td>${r[7]}</td>
+          </tr>
+        `;
+      }
+    }
+    loadData();
+
+    document.getElementById("search").addEventListener("keyup", function() {
+      let filter = this.value.toUpperCase();
+      let trs = document.querySelectorAll("#table-body tr");
+      trs.forEach(tr => {
+        let td = tr.getElementsByTagName("td")[0];
+        if (td) {
+          let txt = td.textContent || td.innerText;
+          tr.style.display = txt.toUpperCase().includes(filter) ? "" : "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
